@@ -35,18 +35,31 @@ $ npm run test:cov
 ```
 
 ## 开发环境准备
+
 mysql 5.7.26
 docker 20.10.17
+node 16.13.1
+nest 8.2.8
+```bash
+# 数据库启动命令
+$ docker run -p 23306:3306 --name mysql -v /tmp/db:/docker-entrypoint-initdb.d -e MYSQL_ROOT_PASSWORD=Dl123456 -d mysql:5.7.26
+
+```
 
 
-## License
+## api接口文档地址（localhost:3000/swagger）
+```bash
+# development
+$ npm run start
+```
 
-Nest is [MIT licensed](LICENSE).
+## 打包docker 镜像
 
-# Mysql 模式
+```bash
+#打包
+$ nest build
+$ docker build -t vote:v0.0.1 .
+#运行
+docker run -p3000:3000 vote:v0.0.1
 
-
-
-# 打包
-
-nest build 项目名 admin
+```

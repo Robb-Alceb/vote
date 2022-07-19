@@ -1,5 +1,5 @@
 import {
-  ArgumentsHost,
+  ArgumentsHost, BadRequestException,
   Catch,
   ExceptionFilter,
   HttpException,
@@ -41,6 +41,13 @@ export class ApiExceptionFilter implements ExceptionFilter {
       message =
         exception instanceof HttpException ? exception.message : `${exception}`;
     }
+    if(status == 400 && exception instanceof BadRequestException){
+      let badRequestException = exception instanceof BadRequestException ? (exception as BadRequestException).getResponse(): null;
+      if(badRequestException instanceof Object){
+        message = badRequestException['message'];
+      }
+    }
+
     // 记录 500 日志
     if (status >= 500) {
       Logger.error(exception, ApiExceptionFilter.name);

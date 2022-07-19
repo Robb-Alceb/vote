@@ -48,10 +48,10 @@ export class AdminService {
     if(!admin){
       throw new ApiException(10100, '用户无权限添加候选人');
     }
-    if(this.userRepository.count({where: {passportNumber, userType: UserType.Candidate}})){
+    if(await this.userRepository.count({where: {passportNumber, userType: UserType.Candidate}})){
       throw new ApiException(10101, '候选人已存在');
     }
-    return await this.userRepository.create({name, passportNumber, email, userType});
+    return await this.userRepository.save({name, passportNumber, email, userType});
   }
 
   /**
@@ -66,19 +66,14 @@ export class AdminService {
     if(!admin){
       throw new ApiException(10102, '用户无权限添加候选人');
     }
-    let vote = await this.voteRepository.create({desc, status: VoteStatus.Unstart});
+    let vote = await this.voteRepository.save({desc, status: VoteStatus.Unstart});
 
-    let voteUsers = candidateIds.map((candidateId) => {
-      return {
+    candidateIds.forEach(async (candidateId) => {
+      await this.voteUserRepository.save({
         voteId: vote.id,
         userId: candidateId
-      }
+      });
     });
-    this.voteUserRepository.createQueryBuilder()
-      .insert()
-      .into(VoteUser)
-      .values(voteUsers)
-      .execute();
   }
 
   /**
@@ -114,7 +109,7 @@ export class AdminService {
     /**
      * 获取所得票数
      */
-    voteUsers.map(async (voteUser)=>{
+    voteUsers.forEach(async (voteUser)=>{
       let count = await this.ticketRepository.count({where: {userId: voteUser.userId}});
       rtn.list.push(_.assign(voteUser, {count}));
     })

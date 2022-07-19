@@ -13,7 +13,19 @@ import { jwtConstants } from './contants/decorator.contants';
 import { JwtStrategy } from './strategies/jwt.startegy';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Vote, VoteUser, Ticket]),
+  imports: [
+    TypeOrmModule.forFeature([User, Vote, VoteUser, Ticket]),
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: '192.168.0.64',
+      port: 23306,
+      username: 'root',
+      password: 'Dl123456',
+      database: 'vote',
+      autoLoadEntities: true,
+      synchronize: true,
+      logging: true
+    }),
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '600s' },
